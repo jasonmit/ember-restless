@@ -3,7 +3,7 @@
  * A lightweight data persistence library for Ember.js
  *
  * version: 0.4.2
- * last modifed: 2014-01-03
+ * last modifed: 2014-01-05
  *
  * Garth Poitras <garth22@gmail.com>
  * Copyright (c) 2013 Endless, Inc.
@@ -275,7 +275,12 @@ RESTless.JSONSerializer = RESTless.Serializer.extend({
     if (!field) { return; }
 
     type = field.type;
-    klass = get(Ember.lookup, type);
+
+    if (Ember.typeOf(type) === 'string') {
+      klass = get(this, type, false) || get(Ember.lookup, type);
+    } else {
+      klass = type;
+    }
 
     // If property is a hasMany relationship, deserialze the array
     if (field.hasMany) {
@@ -307,10 +312,16 @@ RESTless.JSONSerializer = RESTless.Serializer.extend({
   deserializeMany: function(recordArray, type, data) {
     if(!data) { return recordArray; }
 
-    var klass = get(Ember.lookup, type),
+    var klass,
         arrayData = this._arrayDataForType(type, data),
         meta, i, len, item, content;
 
+    if (typeof type === 'string') {
+      klass = get(this, type, false) || get(Ember.lookup, type);
+    } else {
+      klass = type;
+    }
+    
     if(!arrayData) { return recordArray; }
 
     if(recordArray) {

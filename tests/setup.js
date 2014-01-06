@@ -27,7 +27,8 @@ App.Comment = RL.Model.extend({
   text: RL.attr('string'),
   post: RL.belongsTo('App.Post'),
   author: RL.belongsTo('App.Person'),
-  likes: RL.hasMany('App.Like')
+  likes: RL.hasMany('App.Like'),
+  lastLike: RL.belongsTo(App.Like)
 });
 
 App.Like = RL.Model.extend({
