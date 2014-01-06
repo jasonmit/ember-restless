@@ -22,6 +22,14 @@ RESTless.JSONSerializer = RESTless.Serializer.extend({
   */
   contentType: 'application/json; charset=utf-8',
 
+  extractType: function(type) {
+    if (Ember.typeOf(type) === 'string') {
+      return get(this, type, false) || get(Ember.lookup, type);
+    }
+    
+    return type;
+  },
+
   /**
     Transforms json object into model
     @method deserialize
@@ -76,11 +84,7 @@ RESTless.JSONSerializer = RESTless.Serializer.extend({
 
     type = field.type;
 
-    if (Ember.typeOf(type) === 'string') {
-      klass = get(this, type, false) || get(Ember.lookup, type);
-    } else {
-      klass = type;
-    }
+    klass = this.extractType(type);
 
     // If property is a hasMany relationship, deserialze the array
     if (field.hasMany) {
@@ -112,16 +116,10 @@ RESTless.JSONSerializer = RESTless.Serializer.extend({
   deserializeMany: function(recordArray, type, data) {
     if(!data) { return recordArray; }
 
-    var klass,
+    var klass = this.extractType(type),
         arrayData = this._arrayDataForType(type, data),
         meta, i, len, item, content;
 
-    if (typeof type === 'string') {
-      klass = get(this, type, false) || get(Ember.lookup, type);
-    } else {
-      klass = type;
-    }
-    
     if(!arrayData) { return recordArray; }
 
     if(recordArray) {
