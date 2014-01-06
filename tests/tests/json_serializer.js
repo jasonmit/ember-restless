@@ -57,6 +57,16 @@ test('null belongsTo relationship values do not create empty models', function()
   equal( null ,   comment.get('author') );
 });
 
+test('type as belongsTo relationship instead of string', function() {
+  var serialzer = RL.JSONSerializer.create(),
+      comment = App.Comment.create(),
+      testJson = { comment: { id: 1, last_like: { username: 'Jason' }} };
+
+  comment.deserialize(testJson);
+
+  equal( 'Jason', comment.get('lastLike.username') );
+});
+
 test('deserializing into an existing record array triggers isLoaded observer', function() {
   var serializer = RL.JSONSerializer.create(),
       testJson = [ { name: 'tag1' }, { name: 'tag2' } ],
